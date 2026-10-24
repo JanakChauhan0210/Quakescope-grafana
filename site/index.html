@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080c18">
+  <title>QuakeScope</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="site"></header>
+<main>
+
+  <section class="hero">
+    <span class="eyebrow rv">API telemetry</span>
+    <h1 class="rv" style="--d:80ms">Watch an API <span class="grad">breathe</span>, in real time.</h1>
+    <p class="lead rv" style="--d:160ms">QuakeScope serves earthquake data from the USGS Earthquake API and measures itself while it runs. Prometheus collects the numbers and Grafana turns them into a live dashboard.</p>
+    <div class="actions rv" style="--d:240ms">
+      <a class="btn primary" href="live.html">Open live graphs &rarr;</a>
+      <a class="btn" data-port="3000" data-path="/" href="#">Grafana dashboard</a>
+    </div>
+  </section>
+
+  <h2 class="rv">What we measure</h2>
+  <p class="rv">The earthquake data is only the example. The project is about three numbers every team watches.</p>
+  <div class="tiles">
+    <div class="tile rate rv"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div><b>Request rate</b><span class="k">How many requests the API receives every second.</span></div>
+    <div class="tile lat rv" style="--d:100ms"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></div><b>Latency</b><span class="k">How long those requests take, shown as p50, p95 and p99.</span></div>
+    <div class="tile err rv" style="--d:200ms"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.01"/></svg></div><b>Error rate</b><span class="k">The share of requests that fail with a server error.</span></div>
+  </div>
+
+  <h2 class="rv">How it fits together</h2>
+  <div class="diagramwrap rv"><img class="diagram" src="img/architecture.svg" alt="Diagram: the load generator sends requests to the API. The API fetches data from USGS. Prometheus reads the API's /metrics page. Grafana asks Prometheus for the numbers."></div>
+  <ol class="steps">
+    <li class="rv"><b>The load generator</b> sends normal requests to the API, about five per second.</li>
+    <li class="rv"><b>The API</b> answers them, asking USGS for data when needed and reusing answers for 60 seconds. It counts and times every request.</li>
+    <li class="rv"><b>The metrics page.</b> The API publishes those counts as plain text at <code>/metrics</code>.</li>
+    <li class="rv"><b>Prometheus</b> reads <code>/metrics</code> every 5 seconds and stores each number with the time.</li>
+    <li class="rv"><b>Grafana</b> asks Prometheus for the numbers and draws the dashboard. The <a href="live.html">Live graphs</a> page draws the same data.</li>
+  </ol>
+
+  <h2 class="rv">The parts</h2>
+  <div class="parts">
+    <div class="part rv" style="--c:var(--blue)"><div class="top"><span class="name"><i class="dot"></i>API</span></div><p>Python (FastAPI) service. Serves earthquake data and the <code>/metrics</code> page.</p><span class="addr"><a data-port="8000" data-path="/docs" href="#">localhost:8000</a></span></div>
+    <div class="part rv" style="--c:var(--amber); --d:80ms"><div class="top"><span class="name"><i class="dot"></i>Prometheus</span></div><p>Collects the metrics every 5 seconds and keeps the history.</p><span class="addr"><a data-port="9090" data-path="/targets" href="#">localhost:9090</a></span></div>
+    <div class="part rv" style="--c:var(--cyan); --d:160ms"><div class="top"><span class="name"><i class="dot"></i>Grafana</span></div><p>Draws the dashboard from the data in Prometheus.</p><span class="addr"><a data-port="3000" data-path="/" href="#">localhost:3000</a></span></div>
+    <div class="part rv" style="--c:var(--green)"><div class="top"><span class="name"><i class="dot"></i>Load generator</span></div><p>Sends steady traffic to our own API so the graphs are never empty.</p><span class="addr">no address</span></div>
+    <div class="part rv" style="--c:var(--violet); --d:80ms"><div class="top"><span class="name"><i class="dot"></i>This website</span></div><p>Overview and live graphs, served by nginx.</p><span class="addr">localhost:8081</span></div>
+  </div>
+
+  <h2 class="rv">Run it</h2>
+  <p class="rv">One command starts all five parts.</p>
+  <div class="code rv"><code id="cmd">docker compose up -d --build</code><button class="copy" data-copy="#cmd">Copy</button></div>
+  <p class="small rv">Wait about a minute, then open <a href="live.html">Live graphs</a>. Stop everything with <code>docker compose down</code>.</p>
+</main>
+<footer></footer>
+<script src="js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "QuakeScope",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postStartCommand": "docker compose up -d --build",
+  "forwardPorts": [8081, 3000, 9090, 8000],
+  "portsAttributes": {
+    "8081": { "label": "Website", "onAutoForward": "openBrowser" },
+    "3000": { "label": "Grafana dashboard", "onAutoForward": "notify" },
+    "9090": { "label": "Prometheus", "onAutoForward": "notify" },
+    "8000": { "label": "API", "onAutoForward": "notify" }
+  }
+}
